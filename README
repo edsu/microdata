@@ -4,12 +4,15 @@ Here's the basic usage:
 
 >>> import microdata
 >>> items = microdata.parse("example.html")
->>> print len(items)
 >>> item = items[0]
+>>> item.itemtype
+"http://schema.org/Person"
 >>> item.name
-"Jane Doe"
->>> print item.get_all('colleages')
-["http://www.xyz.edu/students/alicejones.html", "http://www.xyz.edu/students/bobsmith.html"]
+u"Jane Doe"
+>>> item.colleagues
+u"http://www.xyz.edu/students/alicejones.html"
+>>> item.get_all('colleagues')
+[u"http://www.xyz.edu/students/alicejones.html", u"http://www.xyz.edu/students/bobsmith.html"]
 
 Author: Ed Summers <ehs@pobox.com>
 License: Public Domain

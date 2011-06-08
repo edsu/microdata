@@ -14,6 +14,9 @@ class MicrodataParserTest(TestCase):
 
         item = items[0]
 
+        # item's type should be set
+        self.assertEqual(item.itemtype, "http://schema.org/Person")
+
         # test simple case of a single valued property
         self.assertEqual(item.name, "Jane Doe")
 
