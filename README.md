@@ -23,6 +23,5 @@ u"http://www.xyz.edu/students/alicejones.html"
 [u"http://www.xyz.edu/students/alicejones.html", u"http://www.xyz.edu/students/bobsmith.html"]
 ```
 
-Author: Ed Summers <ehs@pobox.com>
-
-License: Public Domain
+* Author: Ed Summers <ehs@pobox.com>
+* License: Public Domain
