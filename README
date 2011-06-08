@@ -6,7 +6,7 @@ Here's the basic usage:
 >>> items = microdata.parse("example.html")
 >>> item = items[0]
 >>> item.itemtype
-"http://schema.org/Person"
+u"http://schema.org/Person"
 >>> item.name
 u"Jane Doe"
 >>> item.colleagues
