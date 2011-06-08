@@ -1,0 +1,15 @@
+microdata.py is a small utility library for extracting HTML5 Microdata from 
+HTML. It depends on html5lib to do the heavy lifting of building the DOM. 
+Here's the basic usage:
+
+>>> import microdata
+>>> items = microdata.parse("example.html")
+>>> print len(items)
+>>> item = items[0]
+>>> item.name
+"Jane Doe"
+>>> print item.get_all('colleages')
+["http://www.xyz.edu/students/alicejones.html", "http://www.xyz.edu/students/bobsmith.html"]
+
+Author: Ed Summers <ehs@pobox.com>
+License: Public Domain

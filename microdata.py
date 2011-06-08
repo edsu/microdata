@@ -1,9 +1,18 @@
 import json
-from xml.dom import minidom
 
 import html5lib
 
+
+def get_items(location):
+    dom_builder = html5lib.treebuilders.getTreeBuilder("dom")
+    parser = html5lib.HTMLParser(tree=dom_builder)
+    tree = parser.parse(location)
+    return _find_items(tree)
+
+
 class Item(object):
+    """
+    """
 
     def __init__(self, itemtype=None):
         self.itemtype = itemtype
@@ -30,16 +39,13 @@ class Item(object):
         else:
             return []
 
+    def json(self):
+        return json.dumps({"type": self.itemtype, "properties": self.props},
+                          indent=2)
+
     def __repr__(self):
-        d = {"type": self.itemtype, "properties": self.props}
-        return json.dumps(d, indent=2)
+        return self.json()
 
-
-def get_items(location):
-    dom_builder = html5lib.treebuilders.getTreeBuilder("dom")
-    parser = html5lib.HTMLParser(tree=dom_builder)
-    tree = parser.parse(location)
-    return _find_items(tree)
 
 def _find_items(e):
     items = []
@@ -66,9 +72,8 @@ def _get_item(e, item=None):
 
     return item
 
-
 def _is_element(e):
-    return isinstance(e, minidom.Element)
+    return e.nodeType == e.ELEMENT_NODE
 
 def _attr(e, name):
     if e.nodeType == e.ELEMENT_NODE and e.hasAttribute(name):
