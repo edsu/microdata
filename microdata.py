@@ -49,7 +49,7 @@ class Item(object):
 
 def _find_items(e):
     items = []
-    if e.nodeType == e.ELEMENT_NODE and e.hasAttribute("itemscope"):
+    if _is_element(e) and e.hasAttribute("itemscope"):
         item = _get_item(e)
         if item: 
             items.append(item)
@@ -76,7 +76,7 @@ def _is_element(e):
     return e.nodeType == e.ELEMENT_NODE
 
 def _attr(e, name):
-    if e.nodeType == e.ELEMENT_NODE and e.hasAttribute(name):
+    if _is_element(e) and e.hasAttribute(name):
         return e.getAttribute(name)
     return None
 
