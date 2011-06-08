@@ -7,7 +7,7 @@ For more about HTML5 Microdata check out Mark Pilgrim's
 [chapter](http://diveintohtml5.org/extensibility.html) on on it in 
 [Dive Into HTML5](http://diveintohtml5.org/).
 
-Here's the basic usage using example 1 from http://schema.org/Person:
+Here's the basic usage using example 1 from https://raw.github.com/edsu/microdata/master/example.html
 
 ```python
 >>> import microdata
