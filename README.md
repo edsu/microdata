@@ -1,6 +1,8 @@
 microdata.py is a small utility library for extracting 
 [HTML5 Microdata](http://dev.w3.org/html5/md/) from 
-HTML. It depends on html5lib to do the heavy lifting of building the DOM. 
+HTML. It depends on 
+[html5lib](http://code.google.com/p/html5lib/)
+to do the heavy lifting of building the DOM. 
 For more about HTML5 Microdata check out Mark Pilgrim's 
 [chapter](http://diveintohtml5.org/extensibility.html) on on it in 
 [Dive Into HTML5](http://diveintohtml5.org/).
