@@ -1,9 +1,9 @@
+import html5lib
+
 try:
     import json
 except ImportError:
     import simplejson as json
-
-import html5lib
 
 
 def get_items(location):
@@ -27,8 +27,8 @@ class Item(object):
     def __init__(self, itemtype=None, itemid=None):
         """Create an Item, by optionally passing in an itemtype URL
         """
-        self.itemtype = itemtype
-        self.itemid = itemid
+        self.itemtype = URI(itemtype)
+        self.itemid = URI(itemid)
         self.props = {}
 
     def __getattr__(self, name):
@@ -73,18 +73,34 @@ class Item(object):
         i = {}
 
         if self.itemtype:
-            i['$itemtype'] = self.itemtype
+            i['$itemtype'] = self.itemtype.string
         if self.itemid:
-            i['$itemid'] = self.itemid 
+            i['$itemid'] = self.itemid.string
 
         for prop, values in self.props.items():
             i[prop]= []
             for v in values:
                 if isinstance(v, Item):
                     i[prop].append(v.json_dict())
+                elif isinstance(v, URI):
+                    i[prop].append(v.string)
                 else:
                     i[prop].append(v)
         return i
+
+
+class URI(object):
+
+    def __init__(self, string):
+        self.string = string
+
+    def __eq__(self, other):
+        if isinstance(other, URI):
+            return self.string == other.string
+        return False
+
+    def __repr__(self):
+        return string
 
 
 # what follows are the guts of extracting the Items from a DOM
@@ -148,7 +164,9 @@ def _is_itemscope(e):
 def _property_value(e):
     value = None
     attrib = property_values.get(e.tagName, None)
-    if attrib:
+    if attrib in ["href", "src"]:
+        value = URI(e.getAttribute(attrib)) 
+    elif attrib:
         value = e.getAttribute(attrib)
     else:
         value = _text(e)
@@ -161,6 +179,3 @@ def _text(e):
     for child in e.childNodes:
         chunks.append(_text(child))
     return ''.join(chunks)
-
-
-
