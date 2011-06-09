@@ -21,7 +21,7 @@ u"Jane Doe"
 u"http://www.xyz.edu/students/alicejones.html"
 >>> item.get_all('colleagues')
 [u"http://www.xyz.edu/students/alicejones.html", u"http://www.xyz.edu/students/bobsmith.html"]
->>> print i[0].json()
+>>> print item.json()
 { 
   "colleagues": [
     "http://www.xyz.edu/students/alicejones.html",
