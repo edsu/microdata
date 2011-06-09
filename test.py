@@ -8,7 +8,7 @@ class MicrodataParserTest(unittest.TestCase):
     def test_parse(self):
 
         # parse the html for microdata
-        items = microdata.get_items(open("example.html"))
+        items = microdata.get_items(open("test-data/example.html"))
 
         # this html should have just one main item
         self.assertTrue(len(items), 1)
