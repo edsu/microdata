@@ -84,7 +84,22 @@ class Item(object):
         return i
 
 
-# what follows is the guts of extracting the Items from a DOM
+# what follows are the guts of extracting the Items from a DOM
+
+property_values = {
+    'meta':     'content',
+    'audio':    'src',
+    'embed':    'src',
+    'iframe':   'src',
+    'img':      'src',
+    'source':   'src',
+    'video':    'src',
+    'a':        'href',
+    'area':     'href',
+    'link':     'href',
+    'object':   'data',
+    'time':     'datetime',
+}
 
 def _find_items(e):
     items = []
@@ -96,7 +111,6 @@ def _find_items(e):
         for child in e.childNodes:
             items.extend(_find_items(child))
     return items
-
 
 def _get_item(e, item=None):
     if not item:
@@ -115,20 +129,18 @@ def _get_item(e, item=None):
 
     return item
 
+# helper functions around python's minidom
 
 def _attr(e, name):
     if _is_element(e) and e.hasAttribute(name):
         return e.getAttribute(name)
     return None
 
-
 def _is_element(e):
     return e.nodeType == e.ELEMENT_NODE
 
-
 def _is_itemscope(e):
     return _attr(e, "itemscope") is not None
-
 
 def _property_value(e):
     value = None
@@ -139,7 +151,6 @@ def _property_value(e):
         value = _text(e)
     return value
 
-
 def _text(e):
     chunks = []
     if e.nodeType == e.TEXT_NODE:
@@ -149,19 +160,4 @@ def _text(e):
     return ''.join(chunks)
 
 
-# where to look for property values if it isn't in the element text
 
-property_values = {
-    'meta':     'content',
-    'audio':    'src',
-    'embed':    'src',
-    'iframe':   'src',
-    'img':      'src',
-    'source':   'src',
-    'video':    'src',
-    'a':        'href',
-    'area':     'href',
-    'link':     'href',
-    'object':   'data',
-    'time':     'datetime',
-}
