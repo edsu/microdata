@@ -1,4 +1,8 @@
-import json
+try:
+    import json
+except ImportError:
+    import simplejson as json
+
 import unittest
 
 import microdata

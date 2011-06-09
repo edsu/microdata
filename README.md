@@ -11,7 +11,7 @@ Here's the basic usage using https://raw.github.com/edsu/microdata/master/test-d
 
 ```python
 >>> import microdata
->>> items = microdata.parse("example.html")
+>>> items = microdata.get_items(open("test-data/example.html"))
 >>> item = items[0]
 >>> item.itemtype
 u"http://schema.org/Person"
