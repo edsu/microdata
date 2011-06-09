@@ -7,7 +7,7 @@ For more about HTML5 Microdata check out Mark Pilgrim's
 [chapter](http://diveintohtml5.org/extensibility.html) on on it in 
 [Dive Into HTML5](http://diveintohtml5.org/).
 
-Here's the basic usage using https://raw.github.com/edsu/microdata/master/example.html as an example:
+Here's the basic usage using https://raw.github.com/edsu/microdata/master/test-data/example.html as an example:
 
 ```python
 >>> import microdata
@@ -23,6 +23,8 @@ u"http://www.xyz.edu/students/alicejones.html"
 [u"http://www.xyz.edu/students/alicejones.html", u"http://www.xyz.edu/students/bobsmith.html"]
 >>> print item.json()
 { 
+  "$itemtype": "http://schema.org/Person",
+  "$itemid": "http://www.xyz.edu/~jane",
   "colleagues": [
     "http://www.xyz.edu/students/alicejones.html",
     "http://www.xyz.edu/students/bobsmith.html"
@@ -33,16 +35,15 @@ u"http://www.xyz.edu/students/alicejones.html"
   "url": [
     "www.janedoe.com"
   ],
-  "$type": "http://schema.org/Person",
   "image": [
     "janedoe.jpg"
   ],
   "address": [
     { 
+      "$itemtype": "http://schema.org/PostalAddress",
       "addressLocality": [
         "Seattle"
       ],
-      "$type": "http://schema.org/PostalAddress",
       "streetAddress": [
         "\n          20341 Whitworth Institute\n          405 N. Whitworth\n" 
       ],
