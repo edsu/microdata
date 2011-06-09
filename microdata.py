@@ -100,7 +100,7 @@ class URI(object):
         return False
 
     def __repr__(self):
-        return string
+        return self.string
 
 
 # what follows are the guts of extracting the Items from a DOM
