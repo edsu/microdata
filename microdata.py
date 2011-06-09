@@ -27,8 +27,10 @@ class Item(object):
     def __init__(self, itemtype=None, itemid=None):
         """Create an Item, by optionally passing in an itemtype URL
         """
-        self.itemtype = URI(itemtype)
-        self.itemid = URI(itemid)
+        if itemtype:
+            self.itemtype = URI(itemtype)
+        if itemid:
+            self.itemid = URI(itemid)
         self.props = {}
 
     def __getattr__(self, name):
