@@ -100,7 +100,6 @@ def _get_item(e, item=None):
     if not item:
         item = Item(_attr(e, "itemtype"), _attr(e, "itemid"))
 
-
     for child in e.childNodes:
         prop_name = _attr(child, "itemprop")
         if prop_name and _is_itemscope(child):
