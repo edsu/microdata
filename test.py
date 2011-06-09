@@ -1,8 +1,9 @@
-from unittest import TestCase
+import json
+import unittest
 
 import microdata
 
-class MicrodataParserTest(TestCase):
+class MicrodataParserTest(unittest.TestCase):
 
     def test_parse(self):
 
@@ -30,3 +31,14 @@ class MicrodataParserTest(TestCase):
         self.assertEqual(item.get_all("colleagues"), 
                 ["http://www.xyz.edu/students/alicejones.html",
                  "http://www.xyz.edu/students/bobsmith.html"])
+
+        # address should be another item
+        self.assertTrue(isinstance(item.address, microdata.Item))
+        self.assertTrue(item.address.itemtype, "http://schema.org/PostalAddress")
+        self.assertTrue(item.address.addressLocality, "Seattle")
+
+        # json
+        i = json.loads(item.json())
+        self.assertEqual(i["name"][0], "Jane Doe")
+        self.assertTrue(isinstance(i["address"][0], dict))
+        self.assertEqual(i["address"][0]["addressLocality"][0], "Seattle")
