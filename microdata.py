@@ -21,10 +21,11 @@ class Item(object):
     or another Item, if there is a nested Item.
     """
 
-    def __init__(self, itemtype=None):
+    def __init__(self, itemtype=None, itemid=None):
         """Create an Item, by optionally passing in an itemtype URL
         """
         self.itemtype = itemtype
+        self.itemid = itemid
         self.props = {}
 
     def __getattr__(self, name):
@@ -69,7 +70,9 @@ class Item(object):
         i = {}
 
         if self.itemtype:
-            i['$type'] = self.itemtype
+            i['$itemtype'] = self.itemtype
+        if self.itemid:
+            i['$itemid'] = self.itemid 
 
         for prop, values in self.props.items():
             i[prop]= []
@@ -95,7 +98,8 @@ def _find_items(e):
 
 def _get_item(e, item=None):
     if not item:
-        item = Item(itemtype=_attr(e, "itemtype"))
+        item = Item(_attr(e, "itemtype"), _attr(e, "itemid"))
+
 
     for child in e.childNodes:
         prop_name = _attr(child, "itemprop")
