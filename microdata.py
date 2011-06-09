@@ -17,8 +17,8 @@ def get_items(location):
 class Item(object):
     """
     A class for representing a microdata Item. Item properties are accessible 
-    as standard Python properties, which returns the either a unicode string
-    or another Item, if there is a nested Item.
+    as standard Python properties, which return either a unicode string
+    or another Item.
     """
 
     def __init__(self, itemtype=None, itemid=None):
