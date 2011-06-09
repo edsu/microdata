@@ -84,6 +84,8 @@ class Item(object):
         return i
 
 
+# what follows is the guts of extracting the Items from a DOM
+
 def _find_items(e):
     items = []
     if _is_element(e) and e.hasAttribute("itemscope"):
