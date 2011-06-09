@@ -44,8 +44,7 @@ u"http://www.xyz.edu/students/alicejones.html"
       ],
       "$type": "http://schema.org/PostalAddress",
       "streetAddress": [
-        "\n          20341 Whitworth Institute\n          405 N. Whitworth\n
-" 
+        "\n          20341 Whitworth Institute\n          405 N. Whitworth\n" 
       ],
       "postalCode": [
         "98052"
