@@ -43,9 +43,8 @@ class MicrodataParserTest(unittest.TestCase):
 
         # json
         i = json.loads(item.json())
-        print i
         self.assertEqual(i["name"][0], "Jane Doe")
-        self.assertEqual(i["$itemtype"], "http://schema.org/Person")
-        self.assertEqual(i["$itemid"], "http://www.xyz.edu/~jane")
+        self.assertEqual(i["type"], "http://schema.org/Person")
+        self.assertEqual(i["id"], "http://www.xyz.edu/~jane")
         self.assertTrue(isinstance(i["address"][0], dict))
         self.assertEqual(i["address"][0]["addressLocality"][0], "Seattle")

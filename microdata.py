@@ -75,9 +75,9 @@ class Item(object):
         i = {}
 
         if self.itemtype:
-            i['$itemtype'] = self.itemtype.string
+            i['type'] = self.itemtype.string
         if self.itemid:
-            i['$itemid'] = self.itemid.string
+            i['id'] = self.itemid.string
 
         for prop, values in self.props.items():
             i[prop]= []
