@@ -186,7 +186,13 @@ def _text(e):
 
 if __name__ == "__main__":
     import sys, urllib
-    url = sys.argv[1]
-    for item in get_items(urllib.urlopen(url)):
-        print item.json()
-        print
+    if len(sys.argv) < 2:
+        print "Usage: %s URL [...]" % sys.argv[0]
+        sys.exit(1)
+
+    for url in sys.argv[1:]:
+        print url
+
+        for item in get_items(urllib.urlopen(url)):
+            print item.json()
+            print
