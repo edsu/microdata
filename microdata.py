@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import html5lib
 
 try:
@@ -181,3 +183,10 @@ def _text(e):
     for child in e.childNodes:
         chunks.append(_text(child))
     return ''.join(chunks)
+
+if __name__ == "__main__":
+    import sys, urllib
+    url = sys.argv[1]
+    for item in get_items(urllib.urlopen(url)):
+        print item.json()
+        print
