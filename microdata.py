@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 import html5lib
 
 try:
@@ -191,7 +192,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     for url in sys.argv[1:]:
-        print url
+        sys.stderr.write(url + "\n")
 
         for item in get_items(urllib.urlopen(url)):
             print item.json()

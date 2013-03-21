@@ -67,5 +67,9 @@ u"http://www.xyz.edu/students/alicejones.html"
 }
 ```
 
+When you install it via pip it will be made available on the command line too:
+
+    % microdata.py http://www.wdl.org/en/item/1/
+
 * Author: Ed Summers <ehs@pobox.com>
-* License: Public Domain
+* License: CC0
