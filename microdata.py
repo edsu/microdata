@@ -32,8 +32,18 @@ class Item(object):
     def __init__(self, itemtype=None, itemid=None):
         """Create an Item, by optionally passing in an itemtype URL
         """
+
+        # itemtype is split into a list on spaces: see
+        # http://www.whatwg.org/specs/web-apps/current-work/multipage/microdata.html#attr-itemtype
+        self.itemtype = []
+
         if itemtype:
-            self.itemtype = URI(itemtype)
+            if isinstance(itemtype, basestring):
+                types = itemtype.split(" ")
+            else:
+                types = itemtype
+            self.itemtype = [URI(i) for i in types]
+
         if itemid:
             self.itemid = URI(itemid)
         self.props = {}
@@ -77,14 +87,15 @@ class Item(object):
     def json_dict(self):
         """Returns the item, and its nested items as a python dictionary.
         """
-        i = {}
+
+        item = {}
 
         if self.itemtype:
-            i['type'] = self.itemtype.string
+            item['type'] = [i.string for i in self.itemtype]
         if self.itemid:
-            i['id'] = self.itemid.string
+            item['id'] = self.itemid.string
 
-        i['properties'] = props = defaultdict(list)
+        item['properties'] = props = defaultdict(list)
 
         for name, values in self.props.items():
             for v in values:
@@ -94,7 +105,8 @@ class Item(object):
                     props[name].append(v.string)
                 else:
                     props[name].append(v)
-        return i
+
+        return item
 
 
 class URI(object):
