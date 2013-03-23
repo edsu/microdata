@@ -13,7 +13,7 @@ except ImportError:
 
 def get_items(location):
     """
-    Pass in a file or file-like object and get a list of Items present in the 
+    Pass in a file or file-like object and get a list of Items present in the
     HTML document.
     """
     dom_builder = html5lib.treebuilders.getTreeBuilder("dom")
@@ -24,7 +24,7 @@ def get_items(location):
 
 class Item(object):
     """
-    A class for representing a microdata Item. Item properties are accessible 
+    A class for representing a microdata Item. Item properties are accessible
     as standard Python properties, which return either a unicode string
     or another Item.
     """
@@ -44,14 +44,14 @@ class Item(object):
     def set(self, name, value):
         """Set an item property
         """
-        if self.props.has_key(name):
+        if name in self.props:
             self.props[name].append(value)
         else:
             self.props[name] = [value]
 
     def get(self, name):
         """Get an item property. In cases where there are multiple values for
-        a given property this returns only the first. If the property is 
+        a given property this returns only the first. If the property is
         not set None is returned.
         """
         values = self.get_all(name)
@@ -63,7 +63,7 @@ class Item(object):
         """Get all the values for a given property. If the property is not
         set for the Item an empty list is returned.
         """
-        if self.props.has_key(name):
+        if name in self.props:
             return self.props[name]
         else:
             return []
@@ -128,16 +128,18 @@ property_values = {
     'time':     'datetime',
 }
 
+
 def _find_items(e):
     items = []
     if _is_element(e) and e.hasAttribute("itemscope"):
         item = _get_item(e)
-        if item: 
+        if item:
             items.append(item)
     else:
         for child in e.childNodes:
             items.extend(_find_items(child))
     return items
+
 
 def _get_item(e, item=None):
     if not item:
@@ -158,27 +160,32 @@ def _get_item(e, item=None):
 
 # helper functions around python's minidom
 
+
 def _attr(e, name):
     if _is_element(e) and e.hasAttribute(name):
         return e.getAttribute(name)
     return None
 
+
 def _is_element(e):
     return e.nodeType == e.ELEMENT_NODE
 
+
 def _is_itemscope(e):
     return _attr(e, "itemscope") is not None
+
 
 def _property_value(e):
     value = None
     attrib = property_values.get(e.tagName, None)
     if attrib in ["href", "src"]:
-        value = URI(e.getAttribute(attrib)) 
+        value = URI(e.getAttribute(attrib))
     elif attrib:
         value = e.getAttribute(attrib)
     else:
         value = _text(e)
     return value
+
 
 def _text(e):
     chunks = []
@@ -189,7 +196,7 @@ def _text(e):
     return ''.join(chunks)
 
 if __name__ == "__main__":
-    import sys, urllib
+    import urllib
     if len(sys.argv) < 2:
         print "Usage: %s URL [...]" % sys.argv[0]
         sys.exit(1)
