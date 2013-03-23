@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
+from collections import defaultdict
 import sys
+
 import html5lib
 
 try:
@@ -82,15 +84,16 @@ class Item(object):
         if self.itemid:
             i['id'] = self.itemid.string
 
-        for prop, values in self.props.items():
-            i[prop]= []
+        i['properties'] = props = defaultdict(list)
+
+        for name, values in self.props.items():
             for v in values:
                 if isinstance(v, Item):
-                    i[prop].append(v.json_dict())
+                    props[name].append(v.json_dict())
                 elif isinstance(v, URI):
-                    i[prop].append(v.string)
+                    props[name].append(v.string)
                 else:
-                    i[prop].append(v)
+                    props[name].append(v)
         return i
 
 
