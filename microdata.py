@@ -194,6 +194,10 @@ if __name__ == "__main__":
     for url in sys.argv[1:]:
         sys.stderr.write(url + "\n")
 
+        microdata = {}
+        microdata['items'] = items = []
+
         for item in get_items(urllib.urlopen(url)):
-            print item.json()
-            print
+            items.append(item.json_dict())
+
+        print json.dumps(microdata, indent=2)
