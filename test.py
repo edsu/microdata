@@ -20,7 +20,7 @@ class MicrodataParserTest(unittest.TestCase):
         item = items[0]
 
         # item's type should be set
-        self.assertEqual(item.itemtype, URI("http://schema.org/Person"))
+        self.assertEqual(item.itemtype, [URI("http://schema.org/Person")])
 
         # test simple case of a single valued property
         self.assertEqual(item.name, "Jane Doe")
@@ -38,13 +38,13 @@ class MicrodataParserTest(unittest.TestCase):
 
         # address should be another item
         self.assertTrue(isinstance(item.address, Item))
-        self.assertTrue(item.address.itemtype, URI("http://schema.org/PostalAddress"))
+        self.assertEqual(item.address.itemtype, [URI("http://schema.org/PostalAddress")])
         self.assertTrue(item.address.addressLocality, "Seattle")
 
         # json
         i = json.loads(item.json())
-        self.assertEqual(i["name"][0], "Jane Doe")
-        self.assertEqual(i["type"], "http://schema.org/Person")
+        self.assertEqual(i["properties"]["name"][0], "Jane Doe")
+        self.assertEqual(i["type"], ["http://schema.org/Person"])
         self.assertEqual(i["id"], "http://www.xyz.edu/~jane")
-        self.assertTrue(isinstance(i["address"][0], dict))
-        self.assertEqual(i["address"][0]["addressLocality"][0], "Seattle")
+        self.assertTrue(isinstance(i["properties"]["address"][0], dict))
+        self.assertEqual(i["properties"]["address"][0]["properties"]["addressLocality"][0], "Seattle")

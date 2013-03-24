@@ -12,14 +12,29 @@ For more about HTML5 Microdata check out Mark Pilgrim's
 [chapter](http://diveintohtml5.org/extensibility.html) on on it in 
 [Dive Into HTML5](http://diveintohtml5.org/).
 
-Here's the basic usage using https://raw.github.com/edsu/microdata/master/test-data/example.html as an example:
+Command Line
+------------
+
+When you install microdata.py via pip it will be made available on the command 
+line too:
+
+    % microdata.py http://www.wdl.org/en/item/1/
+
+This will print out the JSON for items extracted from the supplied URL.
+
+Library
+-------
+
+Here's the basic usage from Python using https://raw.github.com/edsu/microdata/master/test-data/example.html as an example:
 
 ```python
 >>> import microdata
->>> items = microdata.get_items(open("test-data/example.html"))
+>>> import urllib
+>>> url = "https://raw.github.com/edsu/microdata/master/test-data/example.html"
+>>> items = >>> microdata.get_items(urllib.urlopen(url))
 >>> item = items[0]
 >>> item.itemtype
-u"http://schema.org/Person"
+[http://schema.org/Person]
 >>> item.name
 u"Jane Doe"
 >>> item.colleagues
@@ -27,54 +42,66 @@ u"http://www.xyz.edu/students/alicejones.html"
 >>> item.get_all('colleagues')
 [u"http://www.xyz.edu/students/alicejones.html", u"http://www.xyz.edu/students/bobsmith.html"]
 >>> print item.json()
-{ 
-  "$itemtype": "http://schema.org/Person",
-  "$itemid": "http://www.xyz.edu/~jane",
-  "colleagues": [
-    "http://www.xyz.edu/students/alicejones.html",
-    "http://www.xyz.edu/students/bobsmith.html"
+{
+  "type": [
+    "http://schema.org/Person"
   ],
-  "name": [
-    "Jane Doe"
-  ],
-  "url": [
-    "www.janedoe.com"
-  ],
-  "image": [
-    "janedoe.jpg"
-  ],
-  "address": [
-    { 
-      "$itemtype": "http://schema.org/PostalAddress",
-      "addressLocality": [
-        "Seattle"
-      ],
-      "streetAddress": [
-        "\n          20341 Whitworth Institute\n          405 N. Whitworth\n" 
-      ],
-      "postalCode": [
-        "98052"
-      ],
-      "addressRegion": [
-        "WA"
-      ]
-    }
-  ],
-  "telephone": [
-    "(425) 123-4567"
-  ],
-  "jobTitle": [
-    "Professor"
-  ],
-  "email": [
-    "mailto:jane-doe@xyz.edu"
-  ]
+  "id": "http://www.xyz.edu/~jane",
+  "properties": {
+    "colleagues": [
+      "http://www.xyz.edu/students/alicejones.html",
+      "http://www.xyz.edu/students/bobsmith.html"
+    ],
+    "name": [
+      "Jane Doe"
+    ],
+    "url": [
+      "http://www.janedoe.com"
+    ],
+    "jobTitle": [
+      "Professor"
+    ],
+    "image": [
+      "janedoe.jpg"
+    ],
+    "telephone": [
+      "(425) 123-4567"
+    ],
+    "address": [
+      {
+        "type": [
+          "http://schema.org/PostalAddress"
+        ],
+        "properties": {
+          "addressLocality": [
+            "Seattle"
+          ],
+          "addressRegion": [
+            "WA"
+          ],
+          "streetAddress": [
+            "\n          20341 Whitworth Institute\n          405 N. Whitworth\n        "
+          ],
+          "postalCode": [
+            "98052"
+          ]
+        }
+      }
+    ],
+    "email": [
+      "mailto:jane-doe@xyz.edu"
+    ]
+  }
 }
 ```
 
-When you install it via pip it will be made available on the command line too:
+Authors
+-------
 
-    % microdata.py http://www.wdl.org/en/item/1/
+* Ed Summers <ehs@pobox.com>
+* Chris Adams <chris@improbable.com>
 
-* Author: Ed Summers <ehs@pobox.com>
-* License: CC0
+Lincense
+--------
+
+* CC0
