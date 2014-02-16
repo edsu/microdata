@@ -205,7 +205,7 @@ def _text(e):
         chunks.append(e.data.strip())
     for child in e.childNodes:
         chunks.append(_text(child))
-    return ''.join(chunks)
+    return ' '.join(chunks).strip()
 
 if __name__ == "__main__":
     import urllib
