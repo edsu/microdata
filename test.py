@@ -63,7 +63,7 @@ class MicrodataParserTest(unittest.TestCase):
         self.assertEqual(item.itemtype, [URI("http://schema.org/Event")])
 
         # test case of a nested itemprop
-        self.assertEqual(item.name, "Miami Heat at Philadelphia 76ers - Game 3 (Home Game 1)")
+        self.assertEqual(item.name.strip(), "Miami Heat at Philadelphia 76ers - Game 3 (Home Game 1)")
 
         # test case of a nested itemscope
         self.assertTrue(isinstance(item.location, Item))
@@ -77,7 +77,7 @@ class MicrodataParserTest(unittest.TestCase):
 
         # json
         i = json.loads(item.json())
-        self.assertEqual(i["properties"]["name"][0], "Miami Heat at Philadelphia 76ers - Game 3 (Home Game 1)")
+        self.assertEqual(i["properties"]["name"][0].strip(), "Miami Heat at Philadelphia 76ers - Game 3 (Home Game 1)")
         self.assertEqual(i["type"], ["http://schema.org/Event"])
         self.assertEqual(i["properties"]["url"], ["nba-miami-philidelphia-game3.html"])
         self.assertTrue(isinstance(i["properties"]["location"][0], dict))
