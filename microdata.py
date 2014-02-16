@@ -202,10 +202,10 @@ def _property_value(e):
 def _text(e):
     chunks = []
     if e.nodeType == e.TEXT_NODE:
-        chunks.append(e.data.strip())
+        chunks.append(e.data)
     for child in e.childNodes:
         chunks.append(_text(child))
-    return ' '.join(chunks).strip()
+    return ''.join(chunks)
 
 if __name__ == "__main__":
     import urllib
