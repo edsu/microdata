@@ -162,10 +162,10 @@ def _get_item(e, item=None):
         if prop_name and _is_itemscope(child):
             value = _get_item(child)
             item.set(prop_name, value)
-        elif prop_name:
-            value = _property_value(child)
-            item.set(prop_name, value)
         else:
+            if prop_name:
+                value = _property_value(child)
+                item.set(prop_name, value)
             _get_item(child, item)
 
     return item
@@ -202,7 +202,7 @@ def _property_value(e):
 def _text(e):
     chunks = []
     if e.nodeType == e.TEXT_NODE:
-        chunks.append(e.data)
+        chunks.append(e.data.strip())
     for child in e.childNodes:
         chunks.append(_text(child))
     return ''.join(chunks)
