@@ -167,10 +167,10 @@ def _get_item(e, item=None):
         if prop_name and _is_itemscope(child):
             value = _get_item(child)
             item.set(prop_name, value)
-        elif prop_name:
-            value = _property_value(child)
-            item.set(prop_name, value)
         else:
+            if prop_name:
+                value = _property_value(child)
+                item.set(prop_name, value)
             _get_item(child, item)
 
     return item
