@@ -172,8 +172,10 @@ def _extract(e, item):
             value = _property_value(child)
             item.set(itemprop, value)
             unlinked.extend(_extract(child, item))
-        else:
+        elif itemscope:
             unlinked.append(child)
+        else:
+            unlinked.extend(_extract(child, item))
 
     return unlinked
 
