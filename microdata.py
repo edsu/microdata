@@ -35,29 +35,22 @@ class Item(object):
     """
 
     def __init__(self, itemtype=None, itemid=None):
-        """Create an Item, by optionally passing in an itemtype URL
+        """Create an Item, with an optional itemptype and/or itemid.
         """
-
-        # itemtype is split into a list on spaces: see
-        # http://www.whatwg.org/specs/web-apps/current-work/multipage/microdata.html#attr-itemtype
-        self.itemtype = []
-
+        # itemtype can be a space delimited list
         if itemtype:
-            if isinstance(itemtype, basestring):
-                types = itemtype.split(" ")
-            else:
-                types = itemtype
-            self.itemtype = [URI(i) for i in types]
+            self.itemtype = [URI(i) for i in itemtype.split(" ")]
 
         if itemid:
             self.itemid = URI(itemid)
+
         self.props = {}
 
     def __getattr__(self, name):
         return self.get(name)
 
     def set(self, name, value):
-        """Set an item property
+        """Set an item's property
         """
         if name in self.props:
             self.props[name].append(value)
@@ -65,7 +58,7 @@ class Item(object):
             self.props[name] = [value]
 
     def get(self, name):
-        """Get an item property. In cases where there are multiple values for
+        """Get an item's property. In cases where there are multiple values for
         a given property this returns only the first. If the property is
         not set None is returned.
         """
@@ -148,32 +141,41 @@ property_values = {
 
 def _find_items(e):
     items = []
-    if _is_element(e) and e.hasAttribute("itemscope"):
-        item = _get_item(e)
-        if item:
-            items.append(item)
+    unlinked = []
+    if _is_element(e) and _is_itemscope(e):
+        item = _make_item(e)
+        unlinked = _extract(e, item)
+        items.append(item)
+        for unlinked_element in unlinked:
+            items.extend(_find_items(unlinked_element))
     else:
         for child in e.childNodes:
             items.extend(_find_items(child))
+
     return items
 
 
-def _get_item(e, item=None):
-    if not item:
-        item = Item(_attr(e, "itemtype"), _attr(e, "itemid"))
+def _extract(e, item):
+    # looks in a DOM element for microdata to assign to an Item
+    # _extract returns a list of elements which appeared to have microdata
+    # but which were not directly related to the Item that was passed in
+    unlinked = []
 
     for child in e.childNodes:
-        prop_name = _attr(child, "itemprop")
-        if prop_name and _is_itemscope(child):
-            value = _get_item(child)
-            item.set(prop_name, value)
+        itemprop = _attr(child, "itemprop")
+        itemscope = _is_itemscope(child)
+        if itemprop and itemscope:
+            nested_item = _make_item(child)
+            unlinked.extend(_extract(child, nested_item))
+            item.set(itemprop, nested_item)
+        elif itemprop:
+            value = _property_value(child)
+            item.set(itemprop, value)
+            unlinked.extend(_extract(child, item))
         else:
-            if prop_name:
-                value = _property_value(child)
-                item.set(prop_name, value)
-            _get_item(child, item)
+            unlinked.append(child)
 
-    return item
+    return unlinked
 
 # helper functions around python's minidom
 
@@ -211,6 +213,15 @@ def _text(e):
     for child in e.childNodes:
         chunks.append(_text(child))
     return ''.join(chunks)
+
+
+def _make_item(e):
+    if not _is_itemscope(e):
+        raise Exception("element is not an Item")
+    itemtype = _attr(e, "itemtype")
+    itemid = _attr(e, "itemid")
+    return Item(itemtype, itemid)
+
 
 if __name__ == "__main__":
     import urllib

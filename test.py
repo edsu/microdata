@@ -84,3 +84,26 @@ class MicrodataParserTest(unittest.TestCase):
         self.assertEqual(i["properties"]["location"][0]["properties"]["url"][0], "wells-fargo-center.html")
         self.assertTrue(isinstance(i["properties"]["location"][0]["properties"]["address"][0], dict))
         self.assertEqual(i["properties"]["location"][0]["properties"]["address"][0]["properties"]["addressLocality"][0], "Philadelphia")
+
+    def test_parse_unlinked(self):
+        items = get_items(open("test-data/unlinked.html"))
+        self.assertEqual(len(items), 2)
+
+        i = items[0]
+        self.assertEqual(i.itemtype, [URI("http://schema.org/Person")])
+        self.assertEqual(i.name, "Jane Doe")
+        self.assertEqual(i.streetAddress, None)
+
+        # this PostalAddress is enclosed within the Person but it is 
+        # not linked via the streetAddress itemprop. This particular example 
+        # is probably a bug in the markup, but technically items can appear 
+        # within other items without them being related together with an 
+        # itemprop.
+
+        i = items[1]
+        self.assertEqual(i.itemtype, [URI("http://schema.org/PostalAddress")])
+        self.assertTrue('Whitworth' in i.streetAddress)
+       
+
+if __name__ == "__main__":
+    unittest.main()
