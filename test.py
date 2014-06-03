@@ -96,7 +96,7 @@ class MicrodataParserTest(unittest.TestCase):
 
         # this PostalAddress is enclosed within the Person but it is 
         # not linked via the streetAddress itemprop. This particular example 
-        # is probably a bug in the markup, but technically items can appear 
+        # would represent a bug in the markup, but technically items can appear 
         # within other items without them being related together with an 
         # itemprop.
 
