@@ -7,7 +7,7 @@ if sys.version_info >= (3,):
 
 setup(
     name = 'microdata',
-    version = '0.5.3',
+    version = '0.5.0',
     description = "html5lib extension for parsing microdata",
     author = "Ed Summers",
     author_email = "ehs@pobox.com",
