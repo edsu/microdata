@@ -103,7 +103,13 @@ class MicrodataParserTest(unittest.TestCase):
         i = items[1]
         self.assertEqual(i.itemtype, [URI("http://schema.org/PostalAddress")])
         self.assertTrue('Whitworth' in i.streetAddress)
-       
+
+    def test_skip_level(self):
+        items = get_items(open("test-data/skip-level.html"))
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].name, "Jane Doe")
+
+        
 
 if __name__ == "__main__":
     unittest.main()
