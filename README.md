@@ -31,7 +31,7 @@ Here's the basic usage from Python using https://raw.github.com/edsu/microdata/m
 >>> import microdata
 >>> import urllib
 >>> url = "https://raw.github.com/edsu/microdata/master/test-data/example.html"
->>> items = >>> microdata.get_items(urllib.urlopen(url))
+>>> items = microdata.get_items(urllib.urlopen(url))
 >>> item = items[0]
 >>> item.itemtype
 [http://schema.org/Person]
