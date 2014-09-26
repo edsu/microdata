@@ -226,9 +226,13 @@ def _make_item(e):
 
 
 if __name__ == "__main__":
-    import urllib
+    try:
+        from urllib.request import urlopen
+    except ImportError:
+        from urllib import urlopen
+
     if len(sys.argv) < 2:
-        print "Usage: %s URL [...]" % sys.argv[0]
+        print("Usage: %s URL [...]" % sys.argv[0])
         sys.exit(1)
 
     for url in sys.argv[1:]:
@@ -237,7 +241,7 @@ if __name__ == "__main__":
         microdata = {}
         microdata['items'] = items = []
 
-        for item in get_items(urllib.urlopen(url)):
+        for item in get_items(urlopen(url)):
             items.append(item.json_dict())
 
-        print json.dumps(microdata, indent=2)
+        print(json.dumps(microdata, indent=2))
