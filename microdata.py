@@ -11,20 +11,164 @@ except ImportError:
     import simplejson as json
 
 
-def get_items(location, tree_builder="dom", encoding='UTF-8'):
+class Microdata(object):
     """
-    Pass in a file or file-like object and get a list of Items present in the
-    HTML document.
+    Microdata class for extracting Items from a DOM, providing a compatiblity wrapper for html5lib's trees
     """
-    dom_builder = html5lib.treebuilders.getTreeBuilder(tree_builder)
-    parser = html5lib.HTMLParser(tree=dom_builder)
-    
-    if (sys.version_info.major == 3):
-        tree = parser.parse(location)
-    else:
-        tree = parser.parse(location, encoding=encoding)
-    
-    return _find_items(tree)
+
+    property_values = {
+        'meta':     'content',
+        'audio':    'src',
+        'embed':    'src',
+        'iframe':   'src',
+        'img':      'src',
+        'source':   'src',
+        'video':    'src',
+        'a':        'href',
+        'area':     'href',
+        'link':     'href',
+        'object':   'data',
+        'time':     'datetime',
+    }
+
+
+    def __init__(self, tree_builder="dom"):
+        """
+        Define helper functions to deal with tree differences
+        """
+        self.tree_builder = tree_builder
+        if tree_builder == "lxml":
+            def attr(e, name):
+                return e.get(name)
+
+            def is_element(e):
+                return True
+
+            def text(e):
+                chunks = []
+                if (e.text):
+                    chunks.append(e.text)
+                for child in self._childNodes(e):
+                    chunks.append(self._text(child))
+                return ''.join(chunks)
+
+            def childNodes(e):
+                return e.getchildren()
+
+            def tagName(e):
+                return e.tag.split('}')[1]      #Strip namespaces from tag names
+
+        else:
+            def attr(e, name):
+                if self._is_element(e) and e.hasAttribute(name):
+                    return e.getAttribute(name)
+                return None
+
+            def is_element(e):
+                return e.nodeType == e.ELEMENT_NODE
+
+            def text(e):
+                chunks = []
+                if e.nodeType == e.TEXT_NODE:
+                    chunks.append(e.data)
+                for child in self._childNodes(e):
+                    chunks.append(self._text(child))
+                return ''.join(chunks)
+
+            def childNodes(e):
+                return e.childNodes
+
+            def tagName(e):
+                return e.tagName
+
+        self._attr = attr
+        self._is_element = is_element
+        self._text = text
+        self._childNodes = childNodes
+        self._tagName = tagName
+
+
+    def _find_items(self, e):
+        items = []
+        unlinked = []
+        if self._is_element(e) and self._is_itemscope(e):
+            item = self._make_item(e)
+            unlinked = self._extract(e, item)
+            items.append(item)
+            for unlinked_element in unlinked:
+                items.extend(self._find_items(unlinked_element))
+        else:
+            for child in self._childNodes(e):
+                items.extend(self._find_items(child))
+
+        return items
+
+
+    def _extract(self, e, item):
+        # looks in a DOM element for microdata to assign to an Item
+        # self._extract returns a list of elements which appeared to have microdata
+        # but which were not directly related to the Item that was passed in
+        unlinked = []
+
+        for child in self._childNodes(e):
+            itemprop = self._attr(child, "itemprop")
+            itemscope = self._is_itemscope(child)
+            if itemprop and itemscope:
+                nested_item = self._make_item(child)
+                unlinked.extend(self._extract(child, nested_item))
+                item.set(itemprop, nested_item)
+            elif itemprop:
+                value = self._property_value(child)
+                item.set(itemprop, value)
+                unlinked.extend(self._extract(child, item))
+            elif itemscope:
+                unlinked.append(child)
+            else:
+                unlinked.extend(self._extract(child, item))
+
+        return unlinked
+
+
+    def _is_itemscope(self, e):
+        return self._attr(e, "itemscope") is not None
+
+
+    def _property_value(self, e):
+        value = None
+        attrib = self.property_values.get(self._tagName(e), None)
+        if attrib in ["href", "src"]:
+            value = URI(self._attr(e, attrib))
+        elif attrib:
+            value = self._attr(e, attrib)
+        else:
+            value = self._text(e)
+        return value
+
+
+    def _make_item(self, e):
+        if not self._is_itemscope(e):
+            raise Exception("element is not an Item")
+        itemtype = self._attr(e, "itemtype")
+        itemid = self._attr(e, "itemid")
+        return Item(itemtype, itemid)
+
+
+    def get_items(self, location, encoding='UTF-8'):
+        """
+        Pass in a file or file-like object and get a list of Items present in the
+        HTML document.
+        """
+        dom_builder = html5lib.treebuilders.getTreeBuilder(self.tree_builder)
+        parser = html5lib.HTMLParser(tree=dom_builder)
+        
+        if (sys.version_info.major == 3):
+            tree = parser.parse(location)
+        else:
+            tree = parser.parse(location, encoding=encoding)
+        
+        if (self.tree_builder == "lxml"):
+            return self._find_items(tree.getroot())
+        return self._find_items(tree)
 
 
 class Item(object):
@@ -121,108 +265,11 @@ class URI(object):
         return self.string
 
 
-# what follows are the guts of extracting the Items from a DOM
-
-property_values = {
-    'meta':     'content',
-    'audio':    'src',
-    'embed':    'src',
-    'iframe':   'src',
-    'img':      'src',
-    'source':   'src',
-    'video':    'src',
-    'a':        'href',
-    'area':     'href',
-    'link':     'href',
-    'object':   'data',
-    'time':     'datetime',
-}
-
-
-def _find_items(e):
-    items = []
-    unlinked = []
-    if _is_element(e) and _is_itemscope(e):
-        item = _make_item(e)
-        unlinked = _extract(e, item)
-        items.append(item)
-        for unlinked_element in unlinked:
-            items.extend(_find_items(unlinked_element))
-    else:
-        for child in e.childNodes:
-            items.extend(_find_items(child))
-
-    return items
-
-
-def _extract(e, item):
-    # looks in a DOM element for microdata to assign to an Item
-    # _extract returns a list of elements which appeared to have microdata
-    # but which were not directly related to the Item that was passed in
-    unlinked = []
-
-    for child in e.childNodes:
-        itemprop = _attr(child, "itemprop")
-        itemscope = _is_itemscope(child)
-        if itemprop and itemscope:
-            nested_item = _make_item(child)
-            unlinked.extend(_extract(child, nested_item))
-            item.set(itemprop, nested_item)
-        elif itemprop:
-            value = _property_value(child)
-            item.set(itemprop, value)
-            unlinked.extend(_extract(child, item))
-        elif itemscope:
-            unlinked.append(child)
-        else:
-            unlinked.extend(_extract(child, item))
-
-    return unlinked
-
-# helper functions around python's minidom
-
-
-def _attr(e, name):
-    if _is_element(e) and e.hasAttribute(name):
-        return e.getAttribute(name)
-    return None
-
-
-def _is_element(e):
-    return e.nodeType == e.ELEMENT_NODE
-
-
-def _is_itemscope(e):
-    return _attr(e, "itemscope") is not None
-
-
-def _property_value(e):
-    value = None
-    attrib = property_values.get(e.tagName, None)
-    if attrib in ["href", "src"]:
-        value = URI(e.getAttribute(attrib))
-    elif attrib:
-        value = e.getAttribute(attrib)
-    else:
-        value = _text(e)
-    return value
-
-
-def _text(e):
-    chunks = []
-    if e.nodeType == e.TEXT_NODE:
-        chunks.append(e.data)
-    for child in e.childNodes:
-        chunks.append(_text(child))
-    return ''.join(chunks)
-
-
-def _make_item(e):
-    if not _is_itemscope(e):
-        raise Exception("element is not an Item")
-    itemtype = _attr(e, "itemtype")
-    itemid = _attr(e, "itemid")
-    return Item(itemtype, itemid)
+def get_items(location, encoding='UTF-8'):
+    """
+    Backwards compatibility
+    """
+    return Microdata().get_items(location, encoding)
 
 
 if __name__ == "__main__":
