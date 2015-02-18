@@ -1,7 +1,7 @@
 microdata
 =========
 
-[![Build Status](https://secure.travis-ci.org/edsu/microdata.png)](http://travis-ci.org/edsu/microdata)
+[![Build Status](https://travis-ci.org/Rsx200/microdata-lxml.svg)](http://travis-ci.org/Rsx200/microdata-lxml)
 
 microdata.py is a small utility library for extracting 
 [HTML5 Microdata](http://dev.w3.org/html5/md/) from 
