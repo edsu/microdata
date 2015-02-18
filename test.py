@@ -6,13 +6,14 @@ except ImportError:
 import unittest
 
 from microdata import get_items, Item, URI
+from microdata import Microdata
 
 class MicrodataParserTest(unittest.TestCase):
 
-    def test_parse(self):
+    def helper_parse(self, _get_items_method):
 
         # parse the html for microdata
-        items = get_items(open("test-data/example.html"))
+        items = _get_items_method(open("test-data/example.html"))
 
         # this html should have just one main item
         self.assertTrue(len(items), 1)
@@ -49,10 +50,10 @@ class MicrodataParserTest(unittest.TestCase):
         self.assertTrue(isinstance(i["properties"]["address"][0], dict))
         self.assertEqual(i["properties"]["address"][0]["properties"]["addressLocality"][0], "Seattle")
 
-    def test_parse_nested(self):
+    def helper_parse_nested(self, _get_items_method):
 
         # parse the html for microdata
-        items = get_items(open("test-data/example-nested.html"))
+        items = _get_items_method(open("test-data/example-nested.html"))
 
         # this html should have just one main item
         self.assertTrue(len(items), 1)
@@ -85,8 +86,8 @@ class MicrodataParserTest(unittest.TestCase):
         self.assertTrue(isinstance(i["properties"]["location"][0]["properties"]["address"][0], dict))
         self.assertEqual(i["properties"]["location"][0]["properties"]["address"][0]["properties"]["addressLocality"][0], "Philadelphia")
 
-    def test_parse_unlinked(self):
-        items = get_items(open("test-data/unlinked.html"))
+    def helper_parse_unlinked(self, _get_items_method):
+        items = _get_items_method(open("test-data/unlinked.html"))
         self.assertEqual(len(items), 2)
 
         i = items[0]
@@ -104,12 +105,51 @@ class MicrodataParserTest(unittest.TestCase):
         self.assertEqual(i.itemtype, [URI("http://schema.org/PostalAddress")])
         self.assertTrue('Whitworth' in i.streetAddress)
 
-    def test_skip_level(self):
-        items = get_items(open("test-data/skip-level.html"))
+    def helper_skip_level(self, _get_items_method):
+        items = _get_items_method(open("test-data/skip-level.html"))
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0].name, "Jane Doe")
 
-        
 
-if __name__ == "__main__":
+    #Tests for backwards compatibility
+    def test_parse_dom(self):
+        self.helper_parse(get_items)
+
+    def test_parse_nested_dom(self):
+        self.helper_parse_nested(get_items)
+
+    def test_parse_unlinked_dom(self):
+        self.helper_parse_unlinked(get_items)
+
+    def test_skip_level_dom(self):
+        self.helper_skip_level(get_items)
+
+    #Tests for dom treebuilder
+    def test_parse_dom(self):
+        self.helper_parse(Microdata("dom").get_items)
+
+    def test_parse_nested_dom(self):
+        self.helper_parse_nested(Microdata("dom").get_items)
+
+    def test_parse_unlinked_dom(self):
+        self.helper_parse_unlinked(Microdata("dom").get_items)
+
+    def test_skip_level_dom(self):
+        self.helper_skip_level(Microdata("dom").get_items)
+
+    #Tests for lxml treebuilder
+    def test_parse_lxml(self):
+        self.helper_parse(Microdata("lxml").get_items)
+
+    def test_parse_nested_lxml(self):
+        self.helper_parse_nested(Microdata("lxml").get_items)
+
+    def test_parse_unlinked_lxml(self):
+        self.helper_parse_unlinked(Microdata("lxml").get_items)
+
+    def test_skip_level_lxml(self):
+        self.helper_skip_level(Microdata("lxml").get_items)    
+
+        
+if __name__ == "_main_":
     unittest.main()
