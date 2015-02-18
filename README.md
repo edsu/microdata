@@ -1,7 +1,7 @@
 microdata
 =========
 
-[![Build Status](https://secure.travis-ci.org/edsu/microdata.png)](http://travis-ci.org/edsu/microdata)
+[![Build Status](https://travis-ci.org/Rsx200/microdata-lxml.svg)](http://travis-ci.org/Rsx200/microdata-lxml)
 
 microdata.py is a small utility library for extracting 
 [HTML5 Microdata](http://dev.w3.org/html5/md/) from 
@@ -11,6 +11,14 @@ to do the heavy lifting of building the DOM.
 For more about HTML5 Microdata check out Mark Pilgrim's 
 [chapter](http://diveintohtml5.org/extensibility.html) on on it in 
 [Dive Into HTML5](http://diveintohtml5.org/).
+
+Changelog
+------------
+1) Added support for multiple html5lib tree builders - currently only __dom__ and __lxml__ are implemented
+
+2) Moved parsing functions to Microdata class
+
+3) Implemented backwards compatibility for the __get_items__ method
 
 Command Line
 ------------
@@ -95,11 +103,33 @@ u"http://www.xyz.edu/students/alicejones.html"
 }
 ```
 
+Alternative usage examples, class based:
+
+Treebuilder: __dom__
+```python
+>>> from microdata import Microdata
+>>> import urllib
+>>> url = "https://raw.github.com/edsu/microdata/master/test-data/example.html"
+>>> items = Microdata("dom").get_items(urllib.urlopen(url))
+...
+```
+
+Treebuilder: __lxml__
+```python
+>>> from microdata import Microdata
+>>> import urllib
+>>> url = "https://raw.github.com/edsu/microdata/master/test-data/example.html"
+>>> items = Microdata("lxml").get_items(urllib.urlopen(url))
+...
+```
+
+
 Authors
 -------
 
 * Ed Summers <ehs@pobox.com>
 * Chris Adams <chris@improbable.com>
+* Razvan Muscalu <muscalu.razvan@hotmail.com>
 
 Lincense
 --------
