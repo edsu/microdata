@@ -15,7 +15,9 @@ For more about HTML5 Microdata check out Mark Pilgrim's
 Changelog
 ------------
 1) Added support for multiple html5lib tree builders - currently only __dom__ and __lxml__ are implemented
+
 2) Moved parsing functions to Microdata class
+
 3) Implemented backwards compatibility for the __get_items__ method
 
 Command Line
@@ -109,15 +111,6 @@ Treebuilder: __dom__
 >>> import urllib
 >>> url = "https://raw.github.com/edsu/microdata/master/test-data/example.html"
 >>> items = Microdata("dom").get_items(urllib.urlopen(url))
->>> item = items[0]
->>> item.itemtype
-[http://schema.org/Person]
->>> item.name
-u'Jane Doe'
->>> item.colleagues
-http://www.xyz.edu/students/alicejones.html
->>> item.get_all('colleagues')
-[http://www.xyz.edu/students/alicejones.html, http://www.xyz.edu/students/bobsmith.html]
 ...
 ```
 
@@ -127,15 +120,6 @@ Treebuilder: __lxml__
 >>> import urllib
 >>> url = "https://raw.github.com/edsu/microdata/master/test-data/example.html"
 >>> items = Microdata("lxml").get_items(urllib.urlopen(url))
->>> item = items[0]
->>> item.itemtype
-[http://schema.org/Person]
->>> item.name
-u'Jane Doe'
->>> item.colleagues
-http://www.xyz.edu/students/alicejones.html
->>> item.get_all('colleagues')
-[http://www.xyz.edu/students/alicejones.html, http://www.xyz.edu/students/bobsmith.html]
 ...
 ```
 
