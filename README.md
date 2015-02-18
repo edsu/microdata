@@ -12,6 +12,12 @@ For more about HTML5 Microdata check out Mark Pilgrim's
 [chapter](http://diveintohtml5.org/extensibility.html) on on it in 
 [Dive Into HTML5](http://diveintohtml5.org/).
 
+Changelog
+------------
+1) Added support for multiple html5lib tree builders - currently only __dom__ and __lxml__ are implemented
+2) Moved parsing functions to Microdata class
+3) Implemented backwards compatibility for the __get_items__ method
+
 Command Line
 ------------
 
@@ -95,11 +101,51 @@ u"http://www.xyz.edu/students/alicejones.html"
 }
 ```
 
+Alternative usage examples, class based:
+
+Treebuilder: __dom__
+```python
+>>> from microdata import Microdata
+>>> import urllib
+>>> url = "https://raw.github.com/edsu/microdata/master/test-data/example.html"
+>>> items = Microdata("dom").get_items(urllib.urlopen(url))
+>>> item = items[0]
+>>> item.itemtype
+[http://schema.org/Person]
+>>> item.name
+u'Jane Doe'
+>>> item.colleagues
+http://www.xyz.edu/students/alicejones.html
+>>> item.get_all('colleagues')
+[http://www.xyz.edu/students/alicejones.html, http://www.xyz.edu/students/bobsmith.html]
+...
+```
+
+Treebuilder: __lxml__
+```python
+>>> from microdata import Microdata
+>>> import urllib
+>>> url = "https://raw.github.com/edsu/microdata/master/test-data/example.html"
+>>> items = Microdata("lxml").get_items(urllib.urlopen(url))
+>>> item = items[0]
+>>> item.itemtype
+[http://schema.org/Person]
+>>> item.name
+u'Jane Doe'
+>>> item.colleagues
+http://www.xyz.edu/students/alicejones.html
+>>> item.get_all('colleagues')
+[http://www.xyz.edu/students/alicejones.html, http://www.xyz.edu/students/bobsmith.html]
+...
+```
+
+
 Authors
 -------
 
 * Ed Summers <ehs@pobox.com>
 * Chris Adams <chris@improbable.com>
+* Razvan Muscalu <muscalu.razvan@hotmail.com>
 
 Lincense
 --------
