@@ -170,7 +170,9 @@ def _extract(e, item):
             item.set(itemprop, nested_item)
         elif itemprop:
             value = _property_value(child)
-            item.set(itemprop, value)
+            # itemprops may also be in a space delimited list
+            for i in itemprop.split(" "):
+                item.set(i, value)
             unlinked.extend(_extract(child, item))
         elif itemscope:
             unlinked.append(child)
