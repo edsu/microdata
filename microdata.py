@@ -11,19 +11,14 @@ except ImportError:
     import simplejson as json
 
 
-def get_items(location, encoding='UTF-8'):
+def get_items(location, encoding=None):
     """
-    Pass in a file or file-like object and get a list of Items present in the
+    Pass in a string or file-like object and get a list of Items present in the
     HTML document.
     """
     dom_builder = html5lib.treebuilders.getTreeBuilder("dom")
     parser = html5lib.HTMLParser(tree=dom_builder)
-    
-    if (sys.version_info.major == 3):
-        tree = parser.parse(location)
-    else:
-        tree = parser.parse(location, encoding=encoding)
-    
+    tree = parser.parse(location, encoding=encoding)
     return _find_items(tree)
 
 
