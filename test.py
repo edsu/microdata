@@ -41,6 +41,9 @@ class MicrodataParserTest(unittest.TestCase):
         self.assertEqual(item.address.itemtype, [URI("http://schema.org/PostalAddress")])
         self.assertTrue(item.address.addressLocality, "Seattle")
 
+        # <script> tag should be ignored in the content text
+        self.assertFalse("Unrelated text" in item.address.streetAddress)
+
         # json
         i = json.loads(item.json())
         self.assertEqual(i["properties"]["name"][0], "Jane Doe")
