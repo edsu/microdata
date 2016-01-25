@@ -209,6 +209,8 @@ def _text(e):
     chunks = []
     if e.nodeType == e.TEXT_NODE:
         chunks.append(e.data)
+    elif e.tagName == 'script':
+        return ''
     for child in e.childNodes:
         chunks.append(_text(child))
     return ''.join(chunks)
