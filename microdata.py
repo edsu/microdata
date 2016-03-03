@@ -209,7 +209,7 @@ def _text(e):
     chunks = []
     if e.nodeType == e.TEXT_NODE:
         chunks.append(e.data)
-    elif e.tagName == 'script':
+    elif hasattr(e, 'tagName') and e.tagName == 'script':
         return ''
     for child in e.childNodes:
         chunks.append(_text(child))
