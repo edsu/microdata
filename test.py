@@ -112,6 +112,18 @@ class MicrodataParserTest(unittest.TestCase):
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0].name, "Jane Doe")
 
+
+class URITest(unittest.TestCase):
+    
+    def test_get_domain(self):
+        https_start = "https://github.com/edsu/microdata"
+        self.assertEqual("github.com", URI.get_domain(https_start))
+
+        no_https = "github.com/edsu/microdata"
+        self.assertEqual("github.com", URI.get_domain(no_https))
+
+        plain = "github.com"
+        self.assertEqual(plain, URI.get_domain(plain))
         
 
 if __name__ == "__main__":
