@@ -23,7 +23,11 @@ def get_items(location, encoding=None):
 
     dom_builder = html5lib.treebuilders.getTreeBuilder("dom")
     parser = html5lib.HTMLParser(tree=dom_builder)
-    tree = parser.parse(urlopen(location), encoding=encoding)
+    try:
+        tree = parser.parse(urlopen(location), encoding=encoding)
+    except ValueError:
+        # Try opening it as a local file
+        tree = parser.parse(open(location), encoding=encoding)
     return _find_items(tree, URI.get_domain(location))
 
 
