@@ -117,7 +117,7 @@ class URITest(unittest.TestCase):
     
     def test_get_domain(self):
         https_start = "https://github.com/edsu/microdata"
-        self.assertEqual("github.com", URI.get_domain(https_start))
+        self.assertEqual("https://github.com", URI.get_domain(https_start))
 
         no_https = "github.com/edsu/microdata"
         self.assertEqual("github.com", URI.get_domain(no_https))

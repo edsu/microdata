@@ -125,8 +125,11 @@ class URI(object):
 
     @staticmethod
     def get_domain(url_string):
+        """
+        Get the domain _including_ the protocol specified, if any.
+        """
         if "://" in url_string:
-            return url_string.split("/")[2]
+            return "/".join(url_string.split("/")[0:3])
         else:
             return url_string.split("/")[0]
 
