@@ -21,7 +21,6 @@ def get_items(location, encoding=None):
     except ImportError:
         from urllib import urlopen
 
-    print "Objects in location", location
     dom_builder = html5lib.treebuilders.getTreeBuilder("dom")
     parser = html5lib.HTMLParser(tree=dom_builder)
     tree = parser.parse(urlopen(location), encoding=encoding)
@@ -114,7 +113,7 @@ class URI(object):
         if string.startswith("http://") or string.startswith("https://"):
             self.string = string
         else:
-            self.string = "http://" + domain + string
+            self.string = "/".join(("http:", "", domain, string))
 
     def __eq__(self, other):
         if isinstance(other, URI):

@@ -71,7 +71,7 @@ class MicrodataParserTest(unittest.TestCase):
         # test case of a nested itemscope
         self.assertTrue(isinstance(item.location, Item))
         self.assertEqual(item.location.itemtype, [URI("http://schema.org/Place")])
-        self.assertEqual(item.location.url, URI("wells-fargo-center.html"))
+        self.assertEqual(item.location.url, URI("wells-fargo-center.html", domain="test-data"))
 
         # address should be a nested item
         self.assertTrue(isinstance(item.location.address, Item))
@@ -82,9 +82,9 @@ class MicrodataParserTest(unittest.TestCase):
         i = json.loads(item.json())
         self.assertEqual(i["properties"]["name"][0].strip(), "Miami Heat at Philadelphia 76ers - Game 3 (Home Game 1)")
         self.assertEqual(i["type"], ["http://schema.org/Event"])
-        self.assertEqual(i["properties"]["url"], ["nba-miami-philidelphia-game3.html"])
+        self.assertEqual(i["properties"]["url"], ["http://test-data/nba-miami-philidelphia-game3.html"])
         self.assertTrue(isinstance(i["properties"]["location"][0], dict))
-        self.assertEqual(i["properties"]["location"][0]["properties"]["url"][0], "wells-fargo-center.html")
+        self.assertEqual(i["properties"]["location"][0]["properties"]["url"][0], "http://test-data/wells-fargo-center.html")
         self.assertTrue(isinstance(i["properties"]["location"][0]["properties"]["address"][0], dict))
         self.assertEqual(i["properties"]["location"][0]["properties"]["address"][0]["properties"]["addressLocality"][0], "Philadelphia")
 
