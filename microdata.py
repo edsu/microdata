@@ -181,7 +181,7 @@ def _extract(e, item, url=""):
             unlinked.extend(_extract(child, nested_item, url=url))
             item.set(itemprop, nested_item)
         elif itemprop:
-            value = _property_value(child)
+            value = _property_value(child, domain=url)
             # itemprops may also be in a space delimited list
             for i in itemprop.split(" "):
                 item.set(i, value)
@@ -210,11 +210,11 @@ def _is_itemscope(e):
     return _attr(e, "itemscope") is not None
 
 
-def _property_value(e):
+def _property_value(e, domain=""):
     value = None
     attrib = property_values.get(e.tagName, None)
     if attrib in ["href", "src"]:
-        value = URI(e.getAttribute(attrib))
+        value = URI(e.getAttribute(attrib), domain)
     elif attrib:
         value = e.getAttribute(attrib)
     else:
