@@ -16,10 +16,16 @@ def get_items(location, encoding=None):
     Pass in a string or file-like object and get a list of Items present in the
     HTML document.
     """
+    try:
+        from urllib.request import urlopen
+    except ImportError:
+        from urllib import urlopen
+
+    print "Objects in location", location
     dom_builder = html5lib.treebuilders.getTreeBuilder("dom")
     parser = html5lib.HTMLParser(tree=dom_builder)
-    tree = parser.parse(location, encoding=encoding)
-    return _find_items(tree)
+    tree = parser.parse(urlopen(location), encoding=encoding)
+    return _find_items(tree, URI.get_domain(location))
 
 
 class Item(object):
@@ -29,15 +35,15 @@ class Item(object):
     or another Item.
     """
 
-    def __init__(self, itemtype=None, itemid=None):
+    def __init__(self, itemtype=None, itemid=None, url=""):
         """Create an Item, with an optional itemptype and/or itemid.
         """
         # itemtype can be a space delimited list
         if itemtype:
-            self.itemtype = [URI(i) for i in itemtype.split(" ")]
+            self.itemtype = [URI(i, domain=url) for i in itemtype.split(" ")]
 
         if itemid:
-            self.itemid = URI(itemid)
+            self.itemid = URI(itemid, domain=url)
 
         self.props = {}
 
@@ -104,8 +110,13 @@ class Item(object):
 
 class URI(object):
 
-    def __init__(self, string):
-        self.string = string
+    def __init__(self, string, domain):
+        if string.startswith("http://") or string.startswith("https://"):
+            self.string = string
+        else:
+            self.string = "http://" + domain + string
+
+        print "URI created with string", self.string
 
     def __eq__(self, other):
         if isinstance(other, URI):
@@ -115,6 +126,12 @@ class URI(object):
     def __repr__(self):
         return self.string
 
+    @staticmethod
+    def get_domain(url_string):
+        if "://" in url_string:
+            return url_string.split("/")[2]
+        else:
+            return url_string.split("/")[0]
 
 # what follows are the guts of extracting the Items from a DOM
 
@@ -134,23 +151,23 @@ property_values = {
 }
 
 
-def _find_items(e):
+def _find_items(e, url=""):
     items = []
     unlinked = []
     if _is_element(e) and _is_itemscope(e):
-        item = _make_item(e)
-        unlinked = _extract(e, item)
+        item = _make_item(e, url=url)
+        unlinked = _extract(e, item, url=url)
         items.append(item)
         for unlinked_element in unlinked:
-            items.extend(_find_items(unlinked_element))
+            items.extend(_find_items(unlinked_element, url=url))
     else:
         for child in e.childNodes:
-            items.extend(_find_items(child))
+            items.extend(_find_items(child, url=url))
 
     return items
 
 
-def _extract(e, item):
+def _extract(e, item, url=""):
     # looks in a DOM element for microdata to assign to an Item
     # _extract returns a list of elements which appeared to have microdata
     # but which were not directly related to the Item that was passed in
@@ -160,19 +177,19 @@ def _extract(e, item):
         itemprop = _attr(child, "itemprop")
         itemscope = _is_itemscope(child)
         if itemprop and itemscope:
-            nested_item = _make_item(child)
-            unlinked.extend(_extract(child, nested_item))
+            nested_item = _make_item(child, url=url)
+            unlinked.extend(_extract(child, nested_item, url=url))
             item.set(itemprop, nested_item)
         elif itemprop:
             value = _property_value(child)
             # itemprops may also be in a space delimited list
             for i in itemprop.split(" "):
                 item.set(i, value)
-            unlinked.extend(_extract(child, item))
+            unlinked.extend(_extract(child, item, url=url))
         elif itemscope:
             unlinked.append(child)
         else:
-            unlinked.extend(_extract(child, item))
+            unlinked.extend(_extract(child, item, url=url))
 
     return unlinked
 
@@ -216,20 +233,15 @@ def _text(e):
     return ''.join(chunks)
 
 
-def _make_item(e):
+def _make_item(e, url=""):
     if not _is_itemscope(e):
         raise Exception("element is not an Item")
     itemtype = _attr(e, "itemtype")
     itemid = _attr(e, "itemid")
-    return Item(itemtype, itemid)
+    return Item(itemtype, itemid, url=url)
 
 
 if __name__ == "__main__":
-    try:
-        from urllib.request import urlopen
-    except ImportError:
-        from urllib import urlopen
-
     if len(sys.argv) < 2:
         print("Usage: %s URL [...]" % sys.argv[0])
         sys.exit(1)
@@ -240,7 +252,7 @@ if __name__ == "__main__":
         microdata = {}
         microdata['items'] = items = []
 
-        for item in get_items(urlopen(url)):
+        for item in get_items(url):
             items.append(item.json_dict())
 
         print(json.dumps(microdata, indent=2))
