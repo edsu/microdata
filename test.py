@@ -12,7 +12,7 @@ class MicrodataParserTest(unittest.TestCase):
     def test_parse(self):
 
         # parse the html for microdata
-        items = get_items(open("test-data/example.html"))
+        items = get_items("test-data/example.html")
 
         # this html should have just one main item
         self.assertTrue(len(items), 1)
@@ -55,7 +55,7 @@ class MicrodataParserTest(unittest.TestCase):
     def test_parse_nested(self):
 
         # parse the html for microdata
-        items = get_items(open("test-data/example-nested.html"))
+        items = get_items("test-data/example-nested.html")
 
         # this html should have just one main item
         self.assertTrue(len(items), 1)
@@ -89,7 +89,7 @@ class MicrodataParserTest(unittest.TestCase):
         self.assertEqual(i["properties"]["location"][0]["properties"]["address"][0]["properties"]["addressLocality"][0], "Philadelphia")
 
     def test_parse_unlinked(self):
-        items = get_items(open("test-data/unlinked.html"))
+        items = get_items("test-data/unlinked.html")
         self.assertEqual(len(items), 2)
 
         i = items[0]
@@ -108,7 +108,7 @@ class MicrodataParserTest(unittest.TestCase):
         self.assertTrue('Whitworth' in i.streetAddress)
 
     def test_skip_level(self):
-        items = get_items(open("test-data/skip-level.html"))
+        items = get_items("test-data/skip-level.html")
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0].name, "Jane Doe")
 

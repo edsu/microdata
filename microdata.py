@@ -35,15 +35,15 @@ class Item(object):
     or another Item.
     """
 
-    def __init__(self, itemtype=None, itemid=None, url=""):
+    def __init__(self, itemtype=None, itemid=None, domain=""):
         """Create an Item, with an optional itemptype and/or itemid.
         """
         # itemtype can be a space delimited list
         if itemtype:
-            self.itemtype = [URI(i, domain=url) for i in itemtype.split(" ")]
+            self.itemtype = [URI(i, domain=domain) for i in itemtype.split(" ")]
 
         if itemid:
-            self.itemid = URI(itemid, domain=url)
+            self.itemid = URI(itemid, domain=domain)
 
         self.props = {}
 
@@ -110,13 +110,11 @@ class Item(object):
 
 class URI(object):
 
-    def __init__(self, string, domain):
+    def __init__(self, string, domain=""):
         if string.startswith("http://") or string.startswith("https://"):
             self.string = string
         else:
             self.string = "http://" + domain + string
-
-        print "URI created with string", self.string
 
     def __eq__(self, other):
         if isinstance(other, URI):
@@ -151,23 +149,23 @@ property_values = {
 }
 
 
-def _find_items(e, url=""):
+def _find_items(e, domain=""):
     items = []
     unlinked = []
     if _is_element(e) and _is_itemscope(e):
-        item = _make_item(e, url=url)
-        unlinked = _extract(e, item, url=url)
+        item = _make_item(e, domain=domain)
+        unlinked = _extract(e, item, domain=domain)
         items.append(item)
         for unlinked_element in unlinked:
-            items.extend(_find_items(unlinked_element, url=url))
+            items.extend(_find_items(unlinked_element, domain=domain))
     else:
         for child in e.childNodes:
-            items.extend(_find_items(child, url=url))
+            items.extend(_find_items(child, domain=domain))
 
     return items
 
 
-def _extract(e, item, url=""):
+def _extract(e, item, domain=""):
     # looks in a DOM element for microdata to assign to an Item
     # _extract returns a list of elements which appeared to have microdata
     # but which were not directly related to the Item that was passed in
@@ -177,19 +175,19 @@ def _extract(e, item, url=""):
         itemprop = _attr(child, "itemprop")
         itemscope = _is_itemscope(child)
         if itemprop and itemscope:
-            nested_item = _make_item(child, url=url)
-            unlinked.extend(_extract(child, nested_item, url=url))
+            nested_item = _make_item(child, domain=domain)
+            unlinked.extend(_extract(child, nested_item, domain=domain))
             item.set(itemprop, nested_item)
         elif itemprop:
-            value = _property_value(child, domain=url)
+            value = _property_value(child, domain=domain)
             # itemprops may also be in a space delimited list
             for i in itemprop.split(" "):
                 item.set(i, value)
-            unlinked.extend(_extract(child, item, url=url))
+            unlinked.extend(_extract(child, item, domain=domain))
         elif itemscope:
             unlinked.append(child)
         else:
-            unlinked.extend(_extract(child, item, url=url))
+            unlinked.extend(_extract(child, item, domain=domain))
 
     return unlinked
 
@@ -233,12 +231,12 @@ def _text(e):
     return ''.join(chunks)
 
 
-def _make_item(e, url=""):
+def _make_item(e, domain=""):
     if not _is_itemscope(e):
         raise Exception("element is not an Item")
     itemtype = _attr(e, "itemtype")
     itemid = _attr(e, "itemid")
-    return Item(itemtype, itemid, url=url)
+    return Item(itemtype, itemid, domain=domain)
 
 
 if __name__ == "__main__":
