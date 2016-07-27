@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
-from collections import defaultdict
 import sys
-
 import html5lib
+
+from six import text_type
+from collections import defaultdict
+
 
 try:
     import json
@@ -18,7 +20,10 @@ def get_items(location, encoding=None):
     """
     dom_builder = html5lib.treebuilders.getTreeBuilder("dom")
     parser = html5lib.HTMLParser(tree=dom_builder)
-    tree = parser.parse(location, transport_encoding=encoding)
+    if encoding:
+        tree = parser.parse(location, transport_encoding=encoding)
+    else:
+        tree = parser.parse(location)
     return _find_items(tree)
 
 
