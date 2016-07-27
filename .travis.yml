@@ -1,5 +1,7 @@
 language: python
 python:
-- "2.7"
-- "3.3"
-script: python setup.py test
+  - "2.7"
+  - "3.3"
+script: 
+  - pip install --upgrade setuptools
+  - python setup.py test
