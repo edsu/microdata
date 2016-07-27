@@ -18,7 +18,7 @@ def get_items(location, encoding=None):
     """
     dom_builder = html5lib.treebuilders.getTreeBuilder("dom")
     parser = html5lib.HTMLParser(tree=dom_builder)
-    tree = parser.parse(location, encoding=encoding)
+    tree = parser.parse(location, transport_encoding=encoding)
     return _find_items(tree)
 
 
