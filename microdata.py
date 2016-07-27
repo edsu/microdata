@@ -3,7 +3,6 @@
 import sys
 import html5lib
 
-from six import text_type
 from collections import defaultdict
 
 
