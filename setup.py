@@ -7,7 +7,7 @@ if sys.version_info >= (3,):
 
 setup(
     name = 'microdata',
-    version = '0.5.5',
+    version = '0.6.0',
     description = "html5lib extension for parsing microdata",
     author = "Ed Summers",
     author_email = "ehs@pobox.com",
@@ -15,6 +15,6 @@ setup(
     py_modules = ['microdata'],
     scripts = ['microdata.py'],
     test_suite = 'test',
-    install_requires = ['html5lib'],
+    install_requires = ['html5lib>=0.999999999'],
     **extra
 )
