@@ -205,7 +205,7 @@ def _property_value(e):
     elif attrib:
         value = e.getAttribute(attrib)
     else:
-        value = _text(e)
+        value = e.getAttribute("content") or _text(e)
     return value
 
 
