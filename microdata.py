@@ -164,9 +164,10 @@ def _extract(e, item):
         itemprop = _attr(child, "itemprop")
         itemscope = _is_itemscope(child)
         if itemprop and itemscope:
-            nested_item = _make_item(child)
-            unlinked.extend(_extract(child, nested_item))
-            item.set(itemprop, nested_item)
+            for i in itemprop.split(" "):
+                nested_item = _make_item(child)
+                unlinked.extend(_extract(child, nested_item))
+                item.set(i, nested_item)
         elif itemprop:
             value = _property_value(child)
             # itemprops may also be in a space delimited list

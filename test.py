@@ -112,7 +112,30 @@ class MicrodataParserTest(unittest.TestCase):
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0].name, "Jane Doe")
 
-        
+    def test_parse_multiple_props(self):
+        items = get_items(open("test-data/multiple-props.html"))
+
+        self.assertEqual(len(items), 2)
+
+        item = items[0]
+        i = json.loads(item.json())
+        # both names `John Doe and Jane Dun` should appear under author and creator props
+        self.assertEqual(len(i["properties"]["author"][0]["properties"]["name"]), 2)
+        self.assertEqual(i["properties"]["author"][0]["properties"]["name"], ["John Doe", "Jane Dun"])
+        self.assertTrue(len(i["properties"]["creator"][0]["properties"]["name"]), 2)
+        self.assertEqual(i["properties"]["creator"][0]["properties"]["name"], ["John Doe", "Jane Dun"])
+
+        # nested multiple props
+        self.assertEqual(item.author.affiliation.name, "Stanford University")
+        self.assertEqual(item.creator.affiliation.name, "Stanford University")
+        self.assertEqual(item.author.alumniOf.name, "Stanford University")
+        self.assertEqual(item.creator.alumniOf.name, "Stanford University")
+
+        item = items[1]
+        i = json.loads(item.json())
+        # test case for original issue #3
+        self.assertTrue(i["properties"]["favorite-color"][0], "orange")
+        self.assertTrue(i["properties"]["favorite-fruit"][0], "orange")
 
 if __name__ == "__main__":
     unittest.main()
