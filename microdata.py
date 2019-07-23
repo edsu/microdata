@@ -4,6 +4,7 @@ import sys
 import html5lib
 
 from collections import defaultdict
+from urlparse import urlparse
 
 
 try:
@@ -137,8 +138,9 @@ class URI(object):
         """
         Get the domain _including_ the protocol specified, if any.
         """
-        if "://" in url_string:
-            return "/".join(url_string.split("/")[0:3])
+        parsed = urlparse(url_string)
+        if parsed.scheme:
+            return "/".join((parsed.scheme, "", parsed.netloc))
         else:
             return url_string.split("/")[0]
 
