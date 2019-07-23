@@ -95,13 +95,7 @@ u"http://www.xyz.edu/students/alicejones.html"
 }
 ```
 
-Authors
+License
 -------
-
-* Ed Summers <ehs@pobox.com>
-* Chris Adams <chris@improbable.com>
-
-Lincense
---------
 
 * CC0

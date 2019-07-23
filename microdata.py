@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
-from collections import defaultdict
 import sys
-
 import html5lib
+
+from collections import defaultdict
+
 
 try:
     import json
@@ -23,8 +24,12 @@ def get_items(location, encoding=None):
 
     dom_builder = html5lib.treebuilders.getTreeBuilder("dom")
     parser = html5lib.HTMLParser(tree=dom_builder)
+
     try:
-        tree = parser.parse(urlopen(location), encoding=encoding)
+        if encoding:
+            tree = parser.parse(location, transport_encoding=encoding)
+        else:
+            tree = parser.parse(location)
     except ValueError:
         # Try opening it as a local file
         tree = parser.parse(open(location), encoding=encoding)
@@ -181,9 +186,10 @@ def _extract(e, item, domain=""):
         itemprop = _attr(child, "itemprop")
         itemscope = _is_itemscope(child)
         if itemprop and itemscope:
-            nested_item = _make_item(child, domain=domain)
-            unlinked.extend(_extract(child, nested_item, domain=domain))
-            item.set(itemprop, nested_item)
+            for i in itemprop.split(" "):
+                nested_item = _make_item(child, domain=domain)
+                unlinked.extend(_extract(child, nested_item, domain=domain))
+                item.set(i, nested_item)
         elif itemprop:
             value = _property_value(child, domain=domain)
             # itemprops may also be in a space delimited list
@@ -222,7 +228,7 @@ def _property_value(e, domain=""):
     elif attrib:
         value = e.getAttribute(attrib)
     else:
-        value = _text(e)
+        value = e.getAttribute("content") or _text(e)
     return value
 
 

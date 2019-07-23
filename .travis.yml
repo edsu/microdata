@@ -1,5 +1,14 @@
 language: python
+
 python:
-- "2.7"
-- "3.3"
-script: python setup.py test
+- '3.7'
+
+matrix:
+  include:
+    - python: 3.7
+      dist: xenial
+      sudo: true
+
+script: 
+  - pip install --upgrade setuptools
+  - python setup.py test
