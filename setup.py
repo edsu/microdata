@@ -5,7 +5,7 @@ extra = {}
 
 setup(
     name = 'microdata',
-    version = '0.7.1',
+    version = '0.7.2',
     description = "html5lib extension for parsing microdata",
     author = "Ed Summers",
     author_email = "ehs@pobox.com",
