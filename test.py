@@ -12,7 +12,7 @@ class MicrodataParserTest(unittest.TestCase):
     def test_parse(self):
 
         # parse the html for microdata
-        items = get_items(open("test-data/example.html"))
+        items = get_items("test-data/example.html")
 
         # this html should have just one main item
         self.assertTrue(len(items), 1)
@@ -55,7 +55,7 @@ class MicrodataParserTest(unittest.TestCase):
     def test_parse_nested(self):
 
         # parse the html for microdata
-        items = get_items(open("test-data/example-nested.html"))
+        items = get_items("test-data/example-nested.html")
 
         # this html should have just one main item
         self.assertTrue(len(items), 1)
@@ -71,7 +71,7 @@ class MicrodataParserTest(unittest.TestCase):
         # test case of a nested itemscope
         self.assertTrue(isinstance(item.location, Item))
         self.assertEqual(item.location.itemtype, [URI("http://schema.org/Place")])
-        self.assertEqual(item.location.url, URI("wells-fargo-center.html"))
+        self.assertEqual(item.location.url, URI("wells-fargo-center.html", domain="test-data"))
 
         # address should be a nested item
         self.assertTrue(isinstance(item.location.address, Item))
@@ -82,14 +82,14 @@ class MicrodataParserTest(unittest.TestCase):
         i = json.loads(item.json())
         self.assertEqual(i["properties"]["name"][0].strip(), "Miami Heat at Philadelphia 76ers - Game 3 (Home Game 1)")
         self.assertEqual(i["type"], ["http://schema.org/Event"])
-        self.assertEqual(i["properties"]["url"], ["nba-miami-philidelphia-game3.html"])
+        self.assertEqual(i["properties"]["url"], ["http://test-data/nba-miami-philidelphia-game3.html"])
         self.assertTrue(isinstance(i["properties"]["location"][0], dict))
-        self.assertEqual(i["properties"]["location"][0]["properties"]["url"][0], "wells-fargo-center.html")
+        self.assertEqual(i["properties"]["location"][0]["properties"]["url"][0], "http://test-data/wells-fargo-center.html")
         self.assertTrue(isinstance(i["properties"]["location"][0]["properties"]["address"][0], dict))
         self.assertEqual(i["properties"]["location"][0]["properties"]["address"][0]["properties"]["addressLocality"][0], "Philadelphia")
 
     def test_parse_unlinked(self):
-        items = get_items(open("test-data/unlinked.html"))
+        items = get_items("test-data/unlinked.html")
         self.assertEqual(len(items), 2)
 
         i = items[0]
@@ -108,7 +108,7 @@ class MicrodataParserTest(unittest.TestCase):
         self.assertTrue('Whitworth' in i.streetAddress)
 
     def test_skip_level(self):
-        items = get_items(open("test-data/skip-level.html"))
+        items = get_items("test-data/skip-level.html")
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0].name, "Jane Doe")
 
@@ -136,6 +136,20 @@ class MicrodataParserTest(unittest.TestCase):
         # test case for original issue #3
         self.assertTrue(i["properties"]["favorite-color"][0], "orange")
         self.assertTrue(i["properties"]["favorite-fruit"][0], "orange")
+
+
+class URITest(unittest.TestCase):
+    
+    def test_get_domain(self):
+        https_start = "https://github.com/edsu/microdata"
+        self.assertEqual("https://github.com", URI.get_domain(https_start))
+
+        no_https = "github.com/edsu/microdata"
+        self.assertEqual("github.com", URI.get_domain(no_https))
+
+        plain = "github.com"
+        self.assertEqual(plain, URI.get_domain(plain))
+
 
 if __name__ == "__main__":
     unittest.main()
