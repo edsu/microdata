@@ -1,8 +1,8 @@
 microdata
 =========
 
-[![Build Status](https://secure.travis-ci.org/edsu/microdata.png)](http://travis-ci.org/edsu/microdata)
-
+[![Build Status](https://github.com/edsu/microdata/workflows/tests/badge.svg)](https://github.com/edsu/microdata/actions/workflows/main.yml)
+ 
 microdata.py is a small utility library for extracting [HTML5
 Microdata](http://dev.w3.org/html5/md/) from HTML. It depends on
 [html5lib](http://code.google.com/p/html5lib/) to do the heavy lifting of
