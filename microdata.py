@@ -1,16 +1,32 @@
 #!/usr/bin/env python
 
 import sys
+import json
 import html5lib
 
 from collections import defaultdict
+from urllib.request import urlopen, Request
+
+USER_AGENT = "microdata.py <https://github.com/edsu/microdata>"
 
 
-try:
-    import json
-except ImportError:
-    import simplejson as json
+def main():
 
+    if len(sys.argv) < 2:
+        print("Usage: microdata <URL>")
+        sys.exit(1)
+
+    for url in sys.argv[1:]:
+        sys.stderr.write(url + "\n")
+
+        microdata = {}
+        microdata['items'] = items = []
+
+        req = Request(url, headers={"User-Agent": USER_AGENT})
+        for item in get_items(urlopen(req)):
+            items.append(item.json_dict())
+
+        print(json.dumps(microdata, indent=2))
 
 def get_items(location, encoding=None):
     """
@@ -230,22 +246,6 @@ def _make_item(e):
 
 
 if __name__ == "__main__":
-    try:
-        from urllib.request import urlopen
-    except ImportError:
-        from urllib import urlopen
+    main()
 
-    if len(sys.argv) < 2:
-        print("Usage: %s URL [...]" % sys.argv[0])
-        sys.exit(1)
 
-    for url in sys.argv[1:]:
-        sys.stderr.write(url + "\n")
-
-        microdata = {}
-        microdata['items'] = items = []
-
-        for item in get_items(urlopen(url)):
-            items.append(item.json_dict())
-
-        print(json.dumps(microdata, indent=2))
