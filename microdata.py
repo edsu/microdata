@@ -153,6 +153,11 @@ property_values = {
     'time':     'datetime',
 }
 
+block_elements = [
+    "div",
+    "p",
+    "h1", "h2", "h3", "h4", "h5", "h6"
+]
 
 def _find_items(e):
     items = []
@@ -232,8 +237,15 @@ def _text(e):
         chunks.append(e.data)
     elif hasattr(e, 'tagName') and e.tagName == 'script':
         return ''
+    elif hasattr(e, 'tagName') and e.tagName == 'br':
+        chunks.append("\n")
+
     for child in e.childNodes:
         chunks.append(_text(child))
+
+    if hasattr(e, 'tagName') and e.tagName in block_elements:
+        chunks.append("\n")
+    
     return ''.join(chunks)
 
 

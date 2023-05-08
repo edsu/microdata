@@ -108,6 +108,23 @@ class MicrodataParserTest(unittest.TestCase):
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0].name, "Jane Doe")
 
+    def test_newlines(self):
+        items = get_items(open("test-data/example-dirty.html"))
+        # this html should have just one main item
+        self.assertTrue(len(items), 1)
+
+        item = items[0]
+
+        # description contains a br tag so it should have a newline
+        self.assertEqual(item.description.strip(), "A Professor that likes\nLinebreaks")
+
+        self.assertEqual(item.address.itemtype, [URI("http://schema.org/PostalAddress")])
+        # street adress should contain newlines because p is a block element
+        self.assertEqual(item.address.streetAddress.strip(), "20341 Whitworth Institute\n405 N. Whitworth")
+        self.assertEqual(item.address.addressLocality, "Seattle")
+
+        item = items[0]
+
     def test_parse_multiple_props(self):
         items = get_items(open("test-data/multiple-props.html"))
 
